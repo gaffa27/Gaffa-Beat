@@ -42,7 +42,7 @@ NSString* const BeatSettingShowSceneNumbers 			= @"showSceneNumberLabels";
 
 NSString* const BeatSettingAutosave 					= @"autosave";
 NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
-NSString* const BeatSettingHideFountainMarkup 			= @"hideFountainMarkup";
+NSString* const BeatSettingHideFountainMarkup           = @"hideFountainMarkup";
 NSString* const BeatSettingAutocomplete 				= @"autocomplete";
 NSString* const BeatSettingUseSansSerif 				= @"useSansSerif";
 NSString* const BeatSettingMagnification 				= @"magnification";
@@ -61,6 +61,7 @@ NSString* const BeatSettingSceneHeadingSpacing 			= @"sceneHeadingSpacing";
 NSString* const BeatSettingNovelLineSpacing             = @"novelLineSpacing";
 NSString* const BeatSettingScreenplayItemMore 			= @"screenplayItemMore";
 NSString* const BeatSettingScreenplayItemContd 			= @"screenplayItemContd";
+NSString* const BeatSettingShowInvisibles               = @"showInvisibles";
 NSString* const BeatSettingShowRevisions 				= @"showRevisions";
 NSString* const BeatSettingShowRevisedTextColor         = @"showRevisedTextColor";
 NSString* const BeatSettingShowTags	 					= @"showTags";
@@ -134,7 +135,8 @@ NSString* const BeatSettingDarkMode                     = @"Dark Mode";
         BeatSettingNovelLineSpacing: @[BeatSettingNovelLineSpacing, @(2.0)],
 		BeatSettingScreenplayItemMore: @[BeatSettingScreenplayItemMore, @"MORE"],
 		BeatSettingScreenplayItemContd: @[BeatSettingScreenplayItemContd, @"CONT'D"],
-		BeatSettingShowRevisions: @[BeatSettingShowRevisions, @YES],
+        BeatSettingShowRevisions: @[BeatSettingShowRevisions, @YES],
+        BeatSettingShowInvisibles: @[BeatSettingShowInvisibles, @NO],
         BeatSettingShowRevisedTextColor: @[BeatSettingShowRevisedTextColor, @NO],
 		BeatSettingShowTags: @[BeatSettingShowTags, @YES],
 		BeatSettingAutomaticContd: @[BeatSettingAutomaticContd, @YES],

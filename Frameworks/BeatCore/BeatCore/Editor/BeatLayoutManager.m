@@ -711,6 +711,31 @@
 /// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(BXFont *)aFont forGlyphRange:(NSRange)glyphRange
 {
+    // Get string reference
+    NSUInteger location = charIndexes[0];
+    NSUInteger length = glyphRange.length;
+    CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
+    
+/*
+    if (_editorDelegate.showInvisibles) {
+
+        // Create a mutable copy
+        CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
+        CFStringAppend(modifiedStr, str);
+        
+
+        // Show bullets instead of spaces on lines which contain whitespace only
+        CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        free(newGlyphs);
+        CFRelease(modifiedStr);
+        
+    }
+ */
+
+
     Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
     if (line == nil) return 0;
 
@@ -763,20 +788,23 @@
     NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];
     
     // Nothing to do (TODO: To avoid extra range calculations after every change to attributes, retrieve markup ranges AFTER checking if hiding markup is on)
+    /*
     if (muIndices.count == 0 && markerIndices.count == 0 &&
         !(type == heading || type == transitionLine || type == character) &&
         !(line.string.containsOnlyWhitespace && line.string.length > 1)
-        ) return 0;
-    
+        ) 
+        return 0;
+    */
     // Get string reference
+/*
     NSUInteger location = charIndexes[0];
     NSUInteger length = glyphRange.length;
     CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
-    
+  */
     // Create a mutable copy
     CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
     CFStringAppend(modifiedStr, str);
-    
+
     // Some types get rendered in uppercase
     if (style.uppercase) {
         CFStringUppercase(modifiedStr, NULL);
@@ -813,7 +841,24 @@
         
         free(newGlyphs);
         free(modifiedProps);
-    } else {
+    } 
+    else if (_editorDelegate.showInvisibles) {
+        // Create a mutable copy
+        CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
+        CFStringAppend(modifiedStr, str);
+        
+
+        // Show bullets instead of spaces on lines which contain whitespace only
+        CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        free(newGlyphs);
+        CFRelease(modifiedStr);
+        
+
+    }
+    else {
         // Create the new glyphs
         CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
         [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];

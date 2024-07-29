@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 @property (readonly) bool contentLocked;
 @property (readonly) CGFloat fontSize;
 @property (readonly) bool hideFountainMarkup;
+@property (readonly) bool showInvisibles;
 @property (readonly) bool documentIsLoading;
 @property (nonatomic) bool skipSelectionChangeEvent;
 
@@ -137,6 +138,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopoverMode) {
 -(void)redrawUI;
 -(void)updateMarkupVisibility;
 -(void)toggleHideFountainMarkup;
+-(void)toggleShowInvisibles;
 - (NSRect)rectForRange:(NSRange)range;
 
 

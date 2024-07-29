@@ -226,6 +226,7 @@ typedef void (^BeatChangeListener)(NSRange);
 @property (nonatomic) Line* characterInputForLine;
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
+@property (nonatomic, readonly) bool showInvisibles;
 
 
 #if TARGET_OS_OSX

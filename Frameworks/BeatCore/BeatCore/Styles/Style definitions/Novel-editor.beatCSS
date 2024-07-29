@@ -36,7 +36,7 @@ page {
     margin-left-a4: 0;
     margin-left-us: 0;
     
-    font-type: variable;
+    font-type: fixed;
 }
 
 heading {

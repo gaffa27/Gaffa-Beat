@@ -123,6 +123,7 @@
 // Text view
 @property (weak, nonatomic) IBOutlet BeatTextView *textView;
 
+
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) NSMutableArray *recentCharacters;
@@ -132,6 +133,7 @@
 
 @property (nonatomic) BeatEditorFormatting* initialFormatting;
 @property (nonatomic) bool disableFormatting;
+@property (nonatomic) bool showInvisibles;
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 
 @property (nonatomic) bool headingStyleBold;
@@ -1470,6 +1472,18 @@
 	self.hideFountainMarkup = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHideFountainMarkup];
 	
 	[self.textView toggleHideFountainMarkup];
+		
+	[self updateLayout];
+}
+
+
+#pragma mark - display invisible characters
+
+- (IBAction)toggleShowInvisibles:(id)sender {
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowInvisibles];
+	self.showInvisibles = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowInvisibles];
+	
+	[self.textView toggleShowInvisibles];
 		
 	[self updateLayout];
 }

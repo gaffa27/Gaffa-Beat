@@ -336,6 +336,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     // Don't do anything if the line is null or we don't have a text storage, and don't go out of range when attached to an editor
 	if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > _delegate.text.length)
         return;
+    
+    NSLog(@"line: \"%@\"", line.stringForDisplay);
 
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
@@ -406,7 +408,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
 		if (!alreadyEditing) [textStorage endEditing];
 		
-		return;
+		//return;
 	}
     
 	// Store the type we are formatting for

@@ -1130,6 +1130,28 @@ double clamp(double d, double min, double max)
 	self.needsLayout = true;
 }
 
+///  updatre the display of invisibles
+-(void)updateInvisiblesDisplay
+{
+	/*
+	self.editorDelegate.layoutManager.showsControlCharacters = self.editorDelegate.showInvisibles;
+	self.editorDelegate.layoutManager.showsInvisibleCharacters = self.editorDelegate.showInvisibles;
+	*/
+	NSLog(@"shows Invibles = %@", self.editorDelegate.showInvisibles ? @"Y" : @"N");
+	[self redrawAllGlyphs];
+}
+
+/// Toggles markup hiding on/off
+-(void)toggleShowInvisibles
+{
+	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
+	[self updateInvisiblesDisplay];
+	
+	self.needsDisplay = true;
+	self.needsLayout = true;
+}
+
+
 
 #pragma mark - Layout manager convenience methods
 

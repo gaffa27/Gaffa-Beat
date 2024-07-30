@@ -337,8 +337,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > _delegate.text.length)
         return;
     
-    NSLog(@"line: \"%@\"", line.stringForDisplay);
-
 	ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
     
@@ -707,11 +705,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
 	}
 		
-	// Enumerate FORMATTING RANGES and make all of them invisible
-	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+    // Enumerate FORMATTING RANGES and make all of them invisible
+  
+    [line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
-	}];
-	
+    }];
+    
+     //Enumerate INVISIBLES RANGES and make all of them invisible
+    [line.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
+    }];
+    
 	// Enumerate MACRO RANGES
 	[line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self setForegroundColor:themeManager.macroColor line:line range:range];

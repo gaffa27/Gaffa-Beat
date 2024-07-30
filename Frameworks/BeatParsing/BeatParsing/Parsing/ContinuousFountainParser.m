@@ -831,6 +831,8 @@ static NSDictionary* patterns;
                           excludingIndices:nil
                                       line:line];
     
+    line.invisiblesRanges = [self invisiblesRanges:charArray ofLength:length];
+    
     // Intersecting indices between bold & italic are boldItalic
     if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
     else line.boldItalicRanges = NSMutableIndexSet.new;
@@ -1408,6 +1410,38 @@ static NSDictionary* patterns;
     
     return indexSet;
 }
+
+- (NSMutableIndexSet*)invisiblesRanges:(unichar*)string ofLength:(NSUInteger)length
+{
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    
+    NSInteger lastIndex = length ; //Last index to look at if we are looking for start
+    NSInteger i = 0, j = 0, newRange = 0;
+    
+    
+    for (i = 0; i <= lastIndex;i++) {
+        
+        if (string[i] == ' ' || string[i] == '\n' || string[i] == '\t') {
+            newRange = 0;
+            for (j = i; j < lastIndex; j++) {
+                if (! (string[j] == ' ' || string[j] == '\n' || string[j] == '\t')) {
+                    newRange = 1;
+                    break;
+                }
+            }
+            [indexSet addIndexesInRange:NSMakeRange(i, j - i)];
+            newRange = 0;
+            i = j;
+        }
+    }
+    
+    if (newRange == 1) {
+        [indexSet addIndexesInRange:NSMakeRange(i, j)];
+    }
+    
+    return indexSet;
+}
+
 
 - (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars
 {

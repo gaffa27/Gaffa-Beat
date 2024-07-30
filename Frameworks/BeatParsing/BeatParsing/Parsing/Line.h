@@ -88,6 +88,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 #define OMIT_STYLE @"Omit"
 #define NOTE_STYLE @"Note"
 #define MACRO_STYLE @"Macro"
+#define INVISIBLES_STYLE @"Invisibles"
 
 @class OutlineScene;
 @class BeatExportSettings;
@@ -328,6 +329,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic, readonly) NSUInteger numberOfPrecedingFormattingCharacters;
 
 @property (nonatomic) NSMutableIndexSet* boldRanges;
+@property (nonatomic) NSMutableIndexSet* invisiblesRanges;
 @property (nonatomic) NSMutableIndexSet* italicRanges;
 @property (nonatomic) NSMutableIndexSet* boldItalicRanges;
 @property (nonatomic) NSMutableIndexSet* underlinedRanges;
@@ -337,6 +339,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableIndexSet* strikeoutRanges;
 @property (nonatomic) NSMutableIndexSet* escapeRanges;
 @property (nonatomic) NSMutableIndexSet* macroRanges;
+
 
 /// Returns `true` if the line doesn't have any formatting characters.
 -(bool)noFormatting;

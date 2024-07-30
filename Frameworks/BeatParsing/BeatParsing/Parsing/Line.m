@@ -34,6 +34,7 @@ static NSString* BeatFormattingKeyItalic = @"BeatItalic";
 static NSString* BeatFormattingKeyBold = @"BeatBold";
 static NSString* BeatFormattingKeyBoldItalic = @"BeatBoldItalic";
 static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
+static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
 
 #pragma mark - Initialization
 
@@ -58,6 +59,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         _escapeRanges = NSMutableIndexSet.indexSet;
         _removalSuggestionRanges = NSMutableIndexSet.indexSet;
         _uuid = NSUUID.UUID;
+        _invisiblesRanges = NSMutableIndexSet.indexSet;
         
         _originalString = string;
     }
@@ -387,6 +389,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     
     if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy;
     
+
     // Not sure why these are guarded.
     newLine.italicRanges = self.italicRanges.mutableCopy;
     newLine.boldRanges = self.boldRanges.mutableCopy;
@@ -399,6 +402,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
     newLine.escapeRanges = self.escapeRanges.mutableCopy;
     newLine.macroRanges = self.macroRanges.mutableCopy;
+    newLine.invisiblesRanges = self.invisiblesRanges.mutableCopy;
     
     newLine.sceneNumber = self.sceneNumber.copy;
     newLine.color = self.color.copy;
@@ -952,6 +956,7 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
                                        between:MACRO_OPEN_CHAR
                                            and:MACRO_CLOSE_CHAR
                                     withLength:2];
+        self.invisiblesRanges = [self invisiblesRanges:charArray ofLength:length ];
     }
     @catch (NSException* e) {
         NSLog(@"Error when trying to reset formatting: %@", e);
@@ -1056,6 +1061,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         if (range.length > UNDERLINE_PATTERN.length * 2) {
             if ([self rangeInStringRange:range]) [self addStyleAttr:UNDERLINE_STYLE toString:string range:range];
         }
+    }];
+    
+    [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if ([self rangeInStringRange:range]) [self addStyleAttr:INVISIBLES_STYLE toString:string range:range];
     }];
         
     [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1330,6 +1339,9 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [attrStr addAttribute:BeatFormattingKeyBold value:@YES range:range];
     }];
+    [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [attrStr addAttribute:BeatFormattingKeyInvisibles value:@YES range:range];
+    }];
     [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [attrStr addAttribute:BeatFormattingKeyUnderline value:@YES range:range];
     }];
@@ -1391,6 +1403,37 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     return indexSet;
 }
 
+///these are really just offsets
+- (NSMutableIndexSet*)invisiblesRanges:(unichar*)string ofLength:(NSUInteger)length
+{
+    NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
+    
+    NSInteger lastIndex = length ; //Last index to look at if we are looking for start
+    NSInteger i = 0, j = 0, newRange = 0;
+    
+    
+    for (i = 0; i <= lastIndex;i++) {
+        
+        if (string[i] == ' ' || string[i] == '\n' || string[i] == '\t') {
+            newRange = 0;
+            for (j = i; j < lastIndex; j++) {
+                if (! (string[j] == ' ' || string[j] == '\n' || string[j] == '\t')) {
+                    newRange = 1;
+                    break;
+                }
+            }
+            [indexSet addIndexesInRange:NSMakeRange(i, j - i)];
+            newRange = 0;
+            i = j;
+        }
+    }
+    
+    if (newRange == 1) {
+        [indexSet addIndexesInRange:NSMakeRange(i, j)];
+    }
+    
+    return indexSet;
+}
 
 #pragma mark Formatting checking convenience
 
@@ -1588,6 +1631,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
         [indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
     }];
     
+    [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [indices addIndexesInRange:range];
+    }];
+    
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
             [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
@@ -1599,6 +1646,8 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
             [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
         }];
     }
+    
+    
     
     return indices;
 }
@@ -1677,6 +1726,10 @@ static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
     }];
     [line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [self.macroRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    }];
+    
+    [line.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.invisiblesRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
     
     // Offset and copy revised ranges

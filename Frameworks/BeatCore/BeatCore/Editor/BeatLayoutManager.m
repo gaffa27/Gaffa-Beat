@@ -97,9 +97,14 @@
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
         if (line == nil) return;
-        
+
+        if (! _editorDelegate.showInvisibles) {
         // Do nothing if this line is not a marker or a heading
-        if (line.markerRange.length == 0 && line.beats.count == 0 && ![lineTypes contains:line.type]) return;
+            if (line.markerRange.length == 0 && line.beats.count == 0 && ![lineTypes contains:line.type]) {
+                
+                return;
+            }
+        }
         
         // Get range for the first character. For headings and markers we won't need anything else.
         NSRange r = NSMakeRange(line.position, 1);
@@ -138,7 +143,10 @@
         if (line.beats.count > 0) {
             [self drawBeat:rect inset:inset];
         }
+        
+        
     }];
+    
 }
 
 
@@ -332,7 +340,14 @@
             for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
                 if (i < 0) break;
                 if (self.textStorage.string.length > i && [self.textStorage.string characterAtIndex:i] == '\n') {
-                    rRange.length = rRange.length - 1;
+                    if (! self->_editorDelegate.showInvisibles) {
+                        rRange.length = rRange.length - 1;
+                    }
+                    else {
+                     //   [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3] range:NSMakeRange(i, 1)];
+                        //
+                        //[self addTemporaryAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] forCharacterRange:NSMakeRange(i, 1)];
+                    }
                     break;
                 }
             }
@@ -429,6 +444,7 @@
             NSAttributedString* symbol = [self markerFor:BeatRevisions.revisionGenerations[revisionLevel]];
             
             [symbol drawInRect:rect];
+
         }
     }];
     
@@ -813,7 +829,7 @@
     // Modified properties
     NSGlyphProperty *modifiedProps;
     
-    if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
+    if (line.string.containsOnlyWhitespace && line.string.length >= 2  && !_editorDelegate.showInvisibles) {
         // Show bullets instead of spaces on lines which contain whitespace only
         CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
         CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
@@ -849,8 +865,25 @@
         
 
         // Show bullets instead of spaces on lines which contain whitespace only
-        CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-        CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        NSInteger spaceSubs = CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        //NSLog(@"String: \"%@\"", [self.textStorage.string substringWithRange:(NSRange){ location, length}]);
+        NSInteger newLinesubs = CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        //NSLog (@"Newline subs: %lu",subs);
+        /* gaffa
+         
+        if ((newLinesubs + spaceSubs) > 0) {
+            for (NSInteger i = 0; i < glyphRange.length; i++) {
+                unichar ch = [self.textStorage.string characterAtIndex:charIndexes[i]];
+                
+                if (ch == '\n' || ch == ' ') {
+                    [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] range:NSMakeRange(charIndexes[i], 1)];
+                    // break;
+                }
+            }
+        }
+        */
+         
+        
         CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
         [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
         free(newGlyphs);
@@ -950,6 +983,15 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
      */
 }
 
+- (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager shouldUseAction:(NSControlCharacterAction)action forControlCharacterAtIndex:(NSUInteger)characterIndex {
+  if (self.editorDelegate.showInvisibles && (action & NSControlCharacterActionLineBreak)) {
+    [layoutManager setNotShownAttribute:NO forGlyphAtIndex:[layoutManager glyphIndexForCharacterAtIndex:characterIndex]];
+      
+     // [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] range:NSMakeRange(characterIndex, 1)];
+  }
+
+  return action;
+}
 
 @end
 /*

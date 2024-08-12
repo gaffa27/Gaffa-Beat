@@ -137,7 +137,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.continuousSpellCheckingEnabled) {
 		self.continuousSpellCheckingEnabled = [BeatUserDefaults.sharedDefaults getBool:BeatSettingContinuousSpellChecking];
 	}
-	
+
 	self.editable = YES;
 	self.textContainer.widthTracksTextView = NO;
 	self.textContainer.heightTracksTextView = NO;
@@ -573,7 +573,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 /// Redraws all glyphs in the text view. Used when loading the text view with markup hiding on.
--(void)redrawAllGlyphs
+	-(void)redrawAllGlyphs
 {
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){0, self.string.length} changeInLength:0 actualCharacterRange:nil];
 	[self.layoutManager invalidateLayoutForCharacterRange:(NSRange){0, self.string.length} actualCharacterRange:nil];
@@ -1130,22 +1130,18 @@ double clamp(double d, double min, double max)
 	self.needsLayout = true;
 }
 
-///  updatre the display of invisibles
--(void)updateInvisiblesDisplay
-{
-	/*
-	self.editorDelegate.layoutManager.showsControlCharacters = self.editorDelegate.showInvisibles;
-	self.editorDelegate.layoutManager.showsInvisibleCharacters = self.editorDelegate.showInvisibles;
-	*/
-	NSLog(@"shows Invibles = %@", self.editorDelegate.showInvisibles ? @"Y" : @"N");
-	[self redrawAllGlyphs];
-}
-
 /// Toggles markup hiding on/off
 -(void)toggleShowInvisibles
 {
-	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
-	[self updateInvisiblesDisplay];
+	
+//	self.editorDelegate.layoutManager.showsControlCharacters = self.editorDelegate.showInvisibles;
+//	 self.editorDelegate.layoutManager.showsInvisibleCharacters = self.editorDelegate.showInvisibles;
+	
+	 NSLog(@"self.editorDelegate.layoutManager.showsControlCharacters = %@", self.editorDelegate.layoutManager.showsControlCharacters ? @"Y" : @"N");
+	 NSLog(@"self.editorDelegate.layoutManager.showsInvisibleCharacters = %@", self.editorDelegate.layoutManager.showsInvisibleCharacters ? @"Y" : @"N");
+	NSLog(@"shows Invisibles = %@", self.editorDelegate.showInvisibles ? @"Y" : @"N");
+
+	[self redrawAllGlyphs];
 	
 	self.needsDisplay = true;
 	self.needsLayout = true;
@@ -1296,6 +1292,13 @@ double clamp(double d, double min, double max)
 	return markers;
 }
 
+- (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager shouldUseAction:(NSControlCharacterAction)action forControlCharacterAtIndex:(NSUInteger)characterIndex {
+  if (self.editorDelegate.showInvisibles && (action & NSControlCharacterActionLineBreak)) {
+	[layoutManager setNotShownAttribute:NO forGlyphAtIndex:[layoutManager glyphIndexForCharacterAtIndex:characterIndex]];
+  }
+
+  return action;
+}
 
 @end
 /*

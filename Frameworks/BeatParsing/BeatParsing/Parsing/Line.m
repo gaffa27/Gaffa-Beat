@@ -403,6 +403,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     newLine.escapeRanges = self.escapeRanges.mutableCopy;
     newLine.macroRanges = self.macroRanges.mutableCopy;
     newLine.invisiblesRanges = self.invisiblesRanges.mutableCopy;
+    newLine.invisiblesRanges = self.invisiblesRanges.mutableCopy;
     
     newLine.sceneNumber = self.sceneNumber.copy;
     newLine.color = self.color.copy;
@@ -1063,6 +1064,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         }
     }];
     
+    
     [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if ([self rangeInStringRange:range]) [self addStyleAttr:INVISIBLES_STYLE toString:string range:range];
     }];
@@ -1166,6 +1168,8 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     NSMutableIndexSet* includedRanges = NSMutableIndexSet.new;
     // If we're printing notes, let's include those in the ranges
     if (settings.printNotes) [includedRanges addIndexes:self.noteRanges];
+    
+    if (self.invisiblesRanges.count) [includedRanges addIndexes:self.invisiblesRanges];
     
     // Create actual content ranges
     NSMutableIndexSet* contentRanges = [self contentRangesIncluding:includedRanges].mutableCopy;
@@ -1408,28 +1412,78 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
 {
     NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
     
+    //return indexSet;
+    
+    if (length == 0) {
+        [indexSet addIndexesInRange:NSMakeRange(0, 1)];
+        return indexSet;
+    }
+    
     NSInteger lastIndex = length ; //Last index to look at if we are looking for start
-    NSInteger i = 0, j = 0, newRange = 0;
+    NSInteger locationIndex = 0, lengthIndex = 0;
+    bool newRange = false;
+    bool foundNewLine = false;
+    unichar c;
+    NSRange whiteSpaceRange = NSMakeRange(-1, -1);
     
-    
-    for (i = 0; i <= lastIndex;i++) {
+    for (locationIndex = 0; locationIndex < lastIndex;locationIndex++) {
         
-        if (string[i] == ' ' || string[i] == '\n' || string[i] == '\t') {
-            newRange = 0;
-            for (j = i; j < lastIndex; j++) {
-                if (! (string[j] == ' ' || string[j] == '\n' || string[j] == '\t')) {
-                    newRange = 1;
+        c = string[locationIndex];
+//        NSLog(@"\"%C\" (%x)", c, c);
+        
+        
+        if ( c == ' ' || c == '\t' || c == '\n') {
+            
+            whiteSpaceRange.location = locationIndex;
+            
+            
+            if (c == '\n') {
+                foundNewLine = true;
+            }
+            
+            for (lengthIndex = locationIndex + 1; lengthIndex < lastIndex; lengthIndex++) {
+                
+                c = string[lengthIndex];
+                
+ //               NSLog(@"\"%C\" (%x)", c, c);
+                
+                
+                if (c != ' ' &&  c != '\t' && c != '\n') {
+                    
+                    whiteSpaceRange.length = lengthIndex - whiteSpaceRange.location;
+                    
+                    
+  //                  NSLog(@"1:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
+                    [indexSet addIndexesInRange:whiteSpaceRange];
+                    newRange = false;
+                    whiteSpaceRange.location = -1;
+                    whiteSpaceRange.length = -1;
+                    locationIndex = lengthIndex - 1;
                     break;
+                    
                 }
             }
-            [indexSet addIndexesInRange:NSMakeRange(i, j - i)];
-            newRange = 0;
-            i = j;
+            if (whiteSpaceRange.location != -1 && lengthIndex == length) {
+                whiteSpaceRange.length = length - whiteSpaceRange.location;
+  //              NSLog(@"1a:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
+                [indexSet addIndexesInRange:whiteSpaceRange];
+                newRange = false;
+                whiteSpaceRange.location = -1;
+                whiteSpaceRange.length = -1;
+                break;
+            }
         }
     }
     
-    if (newRange == 1) {
-        [indexSet addIndexesInRange:NSMakeRange(i, j)];
+    
+    
+    if (lengthIndex == length) {
+        // we have reached the end of the line
+        if (whiteSpaceRange.location != -1 && whiteSpaceRange.length == -1) {
+            whiteSpaceRange.length = length - whiteSpaceRange.location;
+            [indexSet addIndexesInRange:whiteSpaceRange];
+      //      NSLog(@"2:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
+        }
     }
     
     return indexSet;
@@ -1850,7 +1904,8 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         @"bold": [self indexSetAsArray:self.boldRanges],
         @"italic": [self indexSetAsArray:self.italicRanges],
         @"underlined": [self indexSetAsArray:self.underlinedRanges],
-        @"revisions": revisedRanges
+        @"revisions": revisedRanges,
+        @"invisibles": [self indexSetAsArray:self.invisiblesRanges]
     };
 }
 

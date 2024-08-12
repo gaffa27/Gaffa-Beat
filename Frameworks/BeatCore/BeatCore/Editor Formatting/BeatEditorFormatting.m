@@ -332,22 +332,23 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 /// - note To support ahead-of-time rendering, we are using `NSMutableAttributedString` in place of  `NSTextStorage`, even when referring to the actual text storage (which is basically just a mutable attributed string subclass)
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
 { @autoreleasepool {
-	// SAFETY MEASURES:
+    // SAFETY MEASURES:
     // Don't do anything if the line is null or we don't have a text storage, and don't go out of range when attached to an editor
-	if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > _delegate.text.length)
+    if (line == nil || self.textStorage == nil || NSMaxRange(line.textRange) > _delegate.text.length)
         return;
     
-	ThemeManager *themeManager = ThemeManager.sharedManager;
+    ThemeManager *themeManager = ThemeManager.sharedManager;
     NSMutableAttributedString *textStorage = self.textStorage;
     
     // Get editing status from delegate
     bool alreadyEditing = _delegate.textStorage.isEditing;
     if (!alreadyEditing) [textStorage beginEditing];
-	
+    
     NSRange selectedRange = _delegate.selectedRange;
-	NSRange range = line.textRange; // range without line break
-	NSRange fullRange = line.range; // range WITH line break
-	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
+    NSRange range = line.textRange; // range without line break
+    NSRange fullRange = line.range; // range WITH line break
+    if (NSMaxRange(fullRange) > textStorage.length) fullRange.length -= 1;
+    
 
     // Check if we should force the font or not. If the current type is NOT the formatted type, we should always reset font.
 	bool forceFont = (line.formattedAs != line.type);
@@ -562,6 +563,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[line.underlinedRanges enumerateRangesInRange:range options: 0 usingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
 	}];
+    
 }
 
 - (void)applyTrait:(NSUInteger)trait range:(NSRange)range textStorage:(NSMutableAttributedString*)textStorage
@@ -712,9 +714,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
     }];
     
      //Enumerate INVISIBLES RANGES and make all of them invisible
-    [line.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
-    }];
+    if (_delegate.showInvisibles) {
+        [line.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
+        }];
+    }
     
 	// Enumerate MACRO RANGES
 	[line.macroRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {

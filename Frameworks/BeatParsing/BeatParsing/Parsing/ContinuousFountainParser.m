@@ -1431,9 +1431,6 @@ static NSDictionary* patterns;
     for (locationIndex = 0; locationIndex < lastIndex;locationIndex++) {
         
         c = string[locationIndex];
-//        NSLog(@"\"%C\" (%x)", c, c);
-        
-        
         if ( c == ' ' || c == '\t' || c == '\n') {
             
             whiteSpaceRange.location = locationIndex;
@@ -1447,27 +1444,23 @@ static NSDictionary* patterns;
                 
                 c = string[lengthIndex];
                 
- //               NSLog(@"\"%C\" (%x)", c, c);
-                
-                
                 if (c != ' ' &&  c != '\t' && c != '\n') {
+                    
+                    
                     
                     whiteSpaceRange.length = lengthIndex - whiteSpaceRange.location;
                     
                     
-  //                  NSLog(@"1:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
                     [indexSet addIndexesInRange:whiteSpaceRange];
                     newRange = false;
                     whiteSpaceRange.location = -1;
                     whiteSpaceRange.length = -1;
                     locationIndex = lengthIndex - 1;
                     break;
-                    
                 }
             }
             if (whiteSpaceRange.location != -1 && lengthIndex == length) {
                 whiteSpaceRange.length = length - whiteSpaceRange.location;
-  //              NSLog(@"1a:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
                 [indexSet addIndexesInRange:whiteSpaceRange];
                 newRange = false;
                 whiteSpaceRange.location = -1;
@@ -1484,7 +1477,6 @@ static NSDictionary* patterns;
         if (whiteSpaceRange.location != -1 && whiteSpaceRange.length == -1) {
             whiteSpaceRange.length = length - whiteSpaceRange.location;
             [indexSet addIndexesInRange:whiteSpaceRange];
-      //      NSLog(@"2:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
         }
     }
     

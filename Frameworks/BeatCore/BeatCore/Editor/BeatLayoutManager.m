@@ -344,9 +344,8 @@
                         rRange.length = rRange.length - 1;
                     }
                     else {
-                     //   [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.3] range:NSMakeRange(i, 1)];
-                        //
-                        //[self addTemporaryAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] forCharacterRange:NSMakeRange(i, 1)];
+                        [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] range:NSMakeRange(i, 1)];
+                        // [self addTemporaryAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] forCharacterRange:NSMakeRange(i, 1)];
                     }
                     break;
                 }
@@ -373,7 +372,6 @@
                 }
                 BXColor *color = bgColors[@"review"];
                 [color setFill];
-
                 
                 NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
                 CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
@@ -721,7 +719,7 @@
 /// Temporary attributes. We'll use every single one of them.
 -(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange
 {
-    return attrs;
+     return attrs;
 }
 
 /// Generate customized glyphs, includes all-caps lines for scene headings and hiding markup.
@@ -741,7 +739,7 @@
         
 
         // Show bullets instead of spaces on lines which contain whitespace only
-        CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+        //CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
         CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
         CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
         [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
@@ -783,7 +781,7 @@
         return glyphRange.length;
     }
     
-    LineType type = line.type;
+    //LineType type = line.type;
     bool currentlyEditing = NSLocationInRange(_editorDelegate.selectedRange.location, line.range) || NSIntersectionRange(_editorDelegate.selectedRange, line.range).length > 0;
             
     // Clear formatting characters etc.
@@ -826,7 +824,6 @@
         CFStringUppercase(modifiedStr, NULL);
     }
     
-    // Modified properties
     NSGlyphProperty *modifiedProps;
     
     if (line.string.containsOnlyWhitespace && line.string.length >= 2  && !_editorDelegate.showInvisibles) {
@@ -843,7 +840,7 @@
         for (NSInteger i = 0; i < glyphRange.length; i++) {
             NSUInteger index = charIndexes[i];
             NSGlyphProperty prop = props[i];
-            
+
             if ([muIndices containsIndex:index]) {
                 prop |= NSGlyphPropertyNull;
             }
@@ -860,36 +857,41 @@
     } 
     else if (_editorDelegate.showInvisibles) {
         // Create a mutable copy
-        CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
-        CFStringAppend(modifiedStr, str);
-        
+        CFMutableStringRef modifiedWhiteSpace = CFStringCreateMutable(NULL, CFStringGetLength(str));
+        CFStringAppend(modifiedWhiteSpace, str);
+        modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
 
-        // Show bullets instead of spaces on lines which contain whitespace only
-        NSInteger spaceSubs = CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-        //NSLog(@"String: \"%@\"", [self.textStorage.string substringWithRange:(NSRange){ location, length}]);
-        NSInteger newLinesubs = CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-        //NSLog (@"Newline subs: %lu",subs);
-        /* gaffa
-         
-        if ((newLinesubs + spaceSubs) > 0) {
+            // Show bullets instead of spaces on lines which contain whitespace only
+        NSInteger spaceSubs = CFStringFindAndReplace(modifiedWhiteSpace, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedWhiteSpace)), 0);
+        
+        NSInteger newLineSubs = CFStringFindAndReplace(modifiedWhiteSpace, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedWhiteSpace)), 0);
+
+        if ((newLineSubs) > 0) {
+            
             for (NSInteger i = 0; i < glyphRange.length; i++) {
                 unichar ch = [self.textStorage.string characterAtIndex:charIndexes[i]];
                 
-                if (ch == '\n' || ch == ' ') {
-                    [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] range:NSMakeRange(charIndexes[i], 1)];
-                    // break;
+                
+                NSGlyphProperty prop = props[i];
+                
+                if (ch == '\n' ) { //|| ch == ' ') {
+                    
+                    prop &= ~(NSGlyphPropertyControlCharacter);
+
+                    //[self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] range:NSMakeRange(charIndexes[i], 1)];
+                    
+                    modifiedProps[i] = prop;
+
                 }
             }
         }
-        */
-         
-        
-        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-        free(newGlyphs);
-        CFRelease(modifiedStr);
-        
 
+        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedWhiteSpace);
+
+        [self setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+        
+        free(newGlyphs);
+        free (modifiedProps);
     }
     else {
         // Create the new glyphs
@@ -898,7 +900,6 @@
         
         free(newGlyphs);
     }
-    
     CFRelease(modifiedStr);
     return glyphRange.length;
 }
@@ -984,11 +985,14 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 }
 
 - (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager shouldUseAction:(NSControlCharacterAction)action forControlCharacterAtIndex:(NSUInteger)characterIndex {
-  if (self.editorDelegate.showInvisibles && (action & NSControlCharacterActionLineBreak)) {
-    [layoutManager setNotShownAttribute:NO forGlyphAtIndex:[layoutManager glyphIndexForCharacterAtIndex:characterIndex]];
-      
-     // [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] range:NSMakeRange(characterIndex, 1)];
-  }
+    if (self.editorDelegate.showInvisibles && (action & NSControlCharacterActionLineBreak)) {
+        
+        [_editorDelegate.layoutManager setNotShownAttribute:NO forGlyphAtIndex:characterIndex];
+        
+        //[layoutManager setNotShownAttribute:NO forGlyphAtIndex:[layoutManager glyphIndexForCharacterAtIndex:characterIndex]];
+        
+        // [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] range:NSMakeRange(characterIndex, 1)];
+    }
 
   return action;
 }

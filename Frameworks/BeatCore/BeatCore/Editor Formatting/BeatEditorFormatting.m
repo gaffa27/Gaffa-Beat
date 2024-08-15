@@ -744,7 +744,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	
 	// Bullets for forced empty lines are invisible, too
-	else if ((line.string.containsOnlyWhitespace && line.length >= 2)) {
+	else if (line.string.containsOnlyWhitespace && line.length >= 2) {
+        
 		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
 	}
 	

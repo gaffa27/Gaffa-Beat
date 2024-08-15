@@ -1134,13 +1134,9 @@ double clamp(double d, double min, double max)
 -(void)toggleShowInvisibles
 {
 	
-//	self.editorDelegate.layoutManager.showsControlCharacters = self.editorDelegate.showInvisibles;
-//	 self.editorDelegate.layoutManager.showsInvisibleCharacters = self.editorDelegate.showInvisibles;
+	//self.editorDelegate.layoutManager.showsControlCharacters = self.editorDelegate.showInvisibles;
+	 //self.editorDelegate.layoutManager.showsInvisibleCharacters = self.editorDelegate.showInvisibles;
 	
-	 NSLog(@"self.editorDelegate.layoutManager.showsControlCharacters = %@", self.editorDelegate.layoutManager.showsControlCharacters ? @"Y" : @"N");
-	 NSLog(@"self.editorDelegate.layoutManager.showsInvisibleCharacters = %@", self.editorDelegate.layoutManager.showsInvisibleCharacters ? @"Y" : @"N");
-	NSLog(@"shows Invisibles = %@", self.editorDelegate.showInvisibles ? @"Y" : @"N");
-
 	[self redrawAllGlyphs];
 	
 	self.needsDisplay = true;

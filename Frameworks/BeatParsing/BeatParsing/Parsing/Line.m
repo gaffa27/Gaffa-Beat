@@ -1064,11 +1064,12 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         }
     }];
     
-    
+/* gaffa
     [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if ([self rangeInStringRange:range]) [self addStyleAttr:INVISIBLES_STYLE toString:string range:range];
     }];
-        
+        */
+    
     [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > OMIT_PATTERN.length * 2) {
             if ([self rangeInStringRange:range]) [self addStyleAttr:OMIT_STYLE toString:string range:range];
@@ -1429,8 +1430,6 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     for (locationIndex = 0; locationIndex < lastIndex;locationIndex++) {
         
         c = string[locationIndex];
-//        NSLog(@"\"%C\" (%x)", c, c);
-        
         
         if ( c == ' ' || c == '\t' || c == '\n') {
             
@@ -1445,15 +1444,11 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
                 
                 c = string[lengthIndex];
                 
- //               NSLog(@"\"%C\" (%x)", c, c);
-                
-                
                 if (c != ' ' &&  c != '\t' && c != '\n') {
                     
                     whiteSpaceRange.length = lengthIndex - whiteSpaceRange.location;
                     
                     
-  //                  NSLog(@"1:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
                     [indexSet addIndexesInRange:whiteSpaceRange];
                     newRange = false;
                     whiteSpaceRange.location = -1;
@@ -1465,7 +1460,6 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
             }
             if (whiteSpaceRange.location != -1 && lengthIndex == length) {
                 whiteSpaceRange.length = length - whiteSpaceRange.location;
-  //              NSLog(@"1a:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
                 [indexSet addIndexesInRange:whiteSpaceRange];
                 newRange = false;
                 whiteSpaceRange.location = -1;
@@ -1482,7 +1476,6 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         if (whiteSpaceRange.location != -1 && whiteSpaceRange.length == -1) {
             whiteSpaceRange.length = length - whiteSpaceRange.location;
             [indexSet addIndexesInRange:whiteSpaceRange];
-      //      NSLog(@"2:whiteSpaceRange(%lu, %lu)", whiteSpaceRange.location, whiteSpaceRange.length);
         }
     }
     
@@ -1700,9 +1693,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
             [indices addIndexesInRange:NSMakeRange(range.location + offset, range.length)];
         }];
     }
-    
-    
-    
+
     return indices;
 }
 
@@ -1904,8 +1895,8 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         @"bold": [self indexSetAsArray:self.boldRanges],
         @"italic": [self indexSetAsArray:self.italicRanges],
         @"underlined": [self indexSetAsArray:self.underlinedRanges],
-        @"revisions": revisedRanges,
-        @"invisibles": [self indexSetAsArray:self.invisiblesRanges]
+        @"revisions": revisedRanges
+        //@"invisibles": [self indexSetAsArray:self.invisiblesRanges]
     };
 }
 

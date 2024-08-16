@@ -133,7 +133,7 @@
 
 @property (nonatomic) BeatEditorFormatting* initialFormatting;
 @property (nonatomic) bool disableFormatting;
-@property (nonatomic) bool showInvisibles;
+@property (nonatomic) bool showWhiteSpace;
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 
 @property (nonatomic) bool headingStyleBold;
@@ -1479,11 +1479,11 @@
 
 #pragma mark - display invisible characters
 
-- (IBAction)toggleShowInvisibles:(id)sender {
-	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowInvisibles];
-	self.showInvisibles = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowInvisibles];
+- (IBAction)toggleShowWhiteSpace:(id)sender {
+	[BeatUserDefaults.sharedDefaults toggleBool:BeatSettingShowWhiteSpace];
+	self.showWhiteSpace = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowWhiteSpace];
 	
-	[self.textView toggleShowInvisibles];
+	[self.textView toggleShowWhiteSpace];
 		
 	[self updateLayout];
 }

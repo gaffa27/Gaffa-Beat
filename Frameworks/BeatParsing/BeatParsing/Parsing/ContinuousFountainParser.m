@@ -831,7 +831,7 @@ static NSDictionary* patterns;
                           excludingIndices:nil
                                       line:line];
     
-    line.invisiblesRanges = [self invisiblesRanges:charArray ofLength:length];
+    line.whiteSpaceRanges = [self whiteSpaceRanges:charArray ofLength:length];
     
     // Intersecting indices between bold & italic are boldItalic
     if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
@@ -1411,7 +1411,7 @@ static NSDictionary* patterns;
     return indexSet;
 }
 
-- (NSMutableIndexSet*)invisiblesRanges:(unichar*)string ofLength:(NSUInteger)length
+- (NSMutableIndexSet*)whiteSpaceRanges:(unichar*)string ofLength:(NSUInteger)length
 {
     NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
     //return indexSet;

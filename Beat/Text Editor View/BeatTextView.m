@@ -1131,7 +1131,7 @@ double clamp(double d, double min, double max)
 }
 
 /// Toggles markup hiding on/off
--(void)toggleShowInvisibles
+-(void)toggleShowWhiteSpace
 {
 	
 	//self.editorDelegate.layoutManager.showsControlCharacters = self.editorDelegate.showInvisibles;
@@ -1289,7 +1289,7 @@ double clamp(double d, double min, double max)
 }
 
 - (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager shouldUseAction:(NSControlCharacterAction)action forControlCharacterAtIndex:(NSUInteger)characterIndex {
-  if (self.editorDelegate.showInvisibles && (action & NSControlCharacterActionLineBreak)) {
+  if (self.editorDelegate.showWhitSpace && (action & NSControlCharacterActionLineBreak)) {
 	[layoutManager setNotShownAttribute:NO forGlyphAtIndex:[layoutManager glyphIndexForCharacterAtIndex:characterIndex]];
   }
 

@@ -713,10 +713,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
         [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
     }];
     
-     //Enumerate INVISIBLES RANGES and make all of them invisible
-    if (_delegate.showInvisibles) {
-        [line.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-            [self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
+     //Enumerate WHITESPACE RANGES and make all of them invisible
+    if (_delegate.showWhiteSpace) {
+        [line.whiteSpaceRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            [self setForegroundColor:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] line:line range:range];
         }];
     }
     

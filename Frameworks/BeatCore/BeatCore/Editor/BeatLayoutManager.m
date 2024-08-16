@@ -98,7 +98,7 @@
         Line* line = (Line*)value;
         if (line == nil) return;
 
-        if (! _editorDelegate.showInvisibles) {
+        if (! _editorDelegate.showWhiteSpace) {
         // Do nothing if this line is not a marker or a heading
             if (line.markerRange.length == 0 && line.beats.count == 0 && ![lineTypes contains:line.type]) {
                 
@@ -340,7 +340,7 @@
             for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
                 if (i < 0) break;
                 if (self.textStorage.string.length > i && [self.textStorage.string characterAtIndex:i] == '\n') {
-                    if (! self->_editorDelegate.showInvisibles) {
+                    if (! self->_editorDelegate.showWhiteSpace) {
                         rRange.length = rRange.length - 1;
                     }
                     else {
@@ -729,26 +729,6 @@
     NSUInteger location = charIndexes[0];
     NSUInteger length = glyphRange.length;
     CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
-    
-/*
-    if (_editorDelegate.showInvisibles) {
-
-        // Create a mutable copy
-        CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
-        CFStringAppend(modifiedStr, str);
-        
-
-        // Show bullets instead of spaces on lines which contain whitespace only
-        //CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-        CFStringFindAndReplace(modifiedStr, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
-        CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-        [self setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-        free(newGlyphs);
-        CFRelease(modifiedStr);
-        
-    }
- */
-
 
     Line *line = [_editorDelegate.parser lineAtPosition:charIndexes[0]];
     if (line == nil) return 0;
@@ -826,7 +806,7 @@
     
     NSGlyphProperty *modifiedProps;
     
-    if (line.string.containsOnlyWhitespace && line.string.length >= 2  && !_editorDelegate.showInvisibles) {
+    if (line.string.containsOnlyWhitespace && line.string.length >= 2  && !_editorDelegate.showWhiteSpace) {
         // Show bullets instead of spaces on lines which contain whitespace only
         CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
         CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
@@ -855,7 +835,7 @@
         free(newGlyphs);
         free(modifiedProps);
     } 
-    else if (_editorDelegate.showInvisibles) {
+    else if (_editorDelegate.showWhiteSpace) {
         // Create a mutable copy
         CFMutableStringRef modifiedWhiteSpace = CFStringCreateMutable(NULL, CFStringGetLength(str));
         CFStringAppend(modifiedWhiteSpace, str);
@@ -985,7 +965,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 }
 
 - (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager shouldUseAction:(NSControlCharacterAction)action forControlCharacterAtIndex:(NSUInteger)characterIndex {
-    if (self.editorDelegate.showInvisibles && (action & NSControlCharacterActionLineBreak)) {
+    if (self.editorDelegate.showWhiteSpace && (action & NSControlCharacterActionLineBreak)) {
         
         [_editorDelegate.layoutManager setNotShownAttribute:NO forGlyphAtIndex:characterIndex];
         

@@ -88,7 +88,6 @@ typedef NS_ENUM(NSUInteger, LineType) {
 #define OMIT_STYLE @"Omit"
 #define NOTE_STYLE @"Note"
 #define MACRO_STYLE @"Macro"
-#define INVISIBLES_STYLE @"Invisibles"
 
 @class OutlineScene;
 @class BeatExportSettings;
@@ -329,7 +328,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic, readonly) NSUInteger numberOfPrecedingFormattingCharacters;
 
 @property (nonatomic) NSMutableIndexSet* boldRanges;
-@property (nonatomic) NSMutableIndexSet* invisiblesRanges;
+@property (nonatomic) NSMutableIndexSet* whiteSpaceRanges;
 @property (nonatomic) NSMutableIndexSet* italicRanges;
 @property (nonatomic) NSMutableIndexSet* boldItalicRanges;
 @property (nonatomic) NSMutableIndexSet* underlinedRanges;

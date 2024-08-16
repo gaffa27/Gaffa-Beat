@@ -1180,13 +1180,14 @@ DQ
                                     <action selector="toggleDisableFormatting:" target="-1" id="KSj-os-foW"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Invisibles" keyEquivalent="V" id="a3F-ZL-N9F" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
+                            <menuItem title="Show  WhiteSpace" keyEquivalent="w" id="a3F-ZL-N9F" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showInvisibles"/>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="toggleShowInvisibles:" target="-1" id="2Q5-5Q-tIR"/>
+                                    <action selector="toggleShowWhiteSpace:" target="-1" id="sxw-r1-hWz"/>
                                 </connections>
                             </menuItem>
                         </items>

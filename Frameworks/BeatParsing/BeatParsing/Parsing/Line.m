@@ -35,6 +35,8 @@ static NSString* BeatFormattingKeyBold = @"BeatBold";
 static NSString* BeatFormattingKeyBoldItalic = @"BeatBoldItalic";
 static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
+static NSString* BeatFormattingKeyWhiteSpace = @"BeatWhiteSpace";
+
 
 #pragma mark - Initialization
 
@@ -59,7 +61,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         _escapeRanges = NSMutableIndexSet.indexSet;
         _removalSuggestionRanges = NSMutableIndexSet.indexSet;
         _uuid = NSUUID.UUID;
-        _invisiblesRanges = NSMutableIndexSet.indexSet;
+        _whiteSpaceRanges = NSMutableIndexSet.indexSet;
         
         _originalString = string;
     }
@@ -390,6 +392,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy;
     
 
+
     // Not sure why these are guarded.
     newLine.italicRanges = self.italicRanges.mutableCopy;
     newLine.boldRanges = self.boldRanges.mutableCopy;
@@ -402,8 +405,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
     newLine.escapeRanges = self.escapeRanges.mutableCopy;
     newLine.macroRanges = self.macroRanges.mutableCopy;
-    newLine.invisiblesRanges = self.invisiblesRanges.mutableCopy;
-    newLine.invisiblesRanges = self.invisiblesRanges.mutableCopy;
+    newLine.whiteSpaceRanges = self.whiteSpaceRanges.mutableCopy;
     
     newLine.sceneNumber = self.sceneNumber.copy;
     newLine.color = self.color.copy;
@@ -957,7 +959,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
                                        between:MACRO_OPEN_CHAR
                                            and:MACRO_CLOSE_CHAR
                                     withLength:2];
-        self.invisiblesRanges = [self invisiblesRanges:charArray ofLength:length ];
+        self.whiteSpaceRanges = [self whiteSpaceRanges:charArray ofLength:length ];
     }
     @catch (NSException* e) {
         NSLog(@"Error when trying to reset formatting: %@", e);
@@ -1170,7 +1172,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     // If we're printing notes, let's include those in the ranges
     if (settings.printNotes) [includedRanges addIndexes:self.noteRanges];
     
-    if (self.invisiblesRanges.count) [includedRanges addIndexes:self.invisiblesRanges];
+    if (self.whiteSpaceRanges.count) [includedRanges addIndexes:self.whiteSpaceRanges];
     
     // Create actual content ranges
     NSMutableIndexSet* contentRanges = [self contentRangesIncluding:includedRanges].mutableCopy;
@@ -1344,7 +1346,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
     [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [attrStr addAttribute:BeatFormattingKeyBold value:@YES range:range];
     }];
-    [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+    [self.whiteSpaceRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [attrStr addAttribute:BeatFormattingKeyInvisibles value:@YES range:range];
     }];
     [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1409,7 +1411,7 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
 }
 
 ///these are really just offsets
-- (NSMutableIndexSet*)invisiblesRanges:(unichar*)string ofLength:(NSUInteger)length
+- (NSMutableIndexSet*)whiteSpaceRanges:(unichar*)string ofLength:(NSUInteger)length
 {
     NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
     
@@ -1678,9 +1680,11 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         [indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
     }];
     
-    [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+    /* gaffa
+    [self.whiteSpaceRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [indices addIndexesInRange:range];
     }];
+    */
     
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1773,8 +1777,8 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         [self.macroRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
     
-    [line.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        [self.invisiblesRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+    [line.whiteSpaceRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [self.whiteSpaceRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
     }];
     
     // Offset and copy revised ranges
@@ -1895,8 +1899,8 @@ static NSString* BeatFormattingKeyInvisibles = @"BeatInvisbles";
         @"bold": [self indexSetAsArray:self.boldRanges],
         @"italic": [self indexSetAsArray:self.italicRanges],
         @"underlined": [self indexSetAsArray:self.underlinedRanges],
-        @"revisions": revisedRanges
-        //@"invisibles": [self indexSetAsArray:self.invisiblesRanges]
+        @"revisions": revisedRanges,
+        @"whiteSpace": [self indexSetAsArray:self.whiteSpaceRanges]
     };
 }
 

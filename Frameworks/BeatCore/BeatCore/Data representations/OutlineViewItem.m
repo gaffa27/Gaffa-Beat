@@ -48,13 +48,14 @@
 }
 
 /// Returns an attributed string for outline view
- + (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes markers:(bool)includeMarkers isDark:(bool)dark
++ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current sceneNumber:(bool)includeSceneNumber synopsis:(bool)includeSynopsis notes:(bool)includeNotes markers:(bool)includeMarkers isDark:(bool)dark wordCount:(bool)includeWordCount 
 {
     OutlineItemOptions options = OutlineItemIncludeHeading;
     if (includeSceneNumber) options |= OutlineItemIncludeSceneNumber;
     if (includeSynopsis) options |= OutlineItemIncludeSynopsis;
     if (includeNotes) options |= OutlineItemIncludeNotes;
     if (includeMarkers) options |= OutlineItemIncludeMarkers;
+    if (includeWordCount) options |= OutlineItemIncludeWordCount;
     if (dark) options |= OutlineItemDarkMode;
     
     return [OutlineViewItem withScene:scene currentScene:current options:options];
@@ -109,22 +110,33 @@
             if (line.omitted) string = [NSString stringWithFormat:@"(%@)", string];
         }
         
-		// Only include scene number if it's requested
+        // Only include scene number if it's requested
         bool includeSceneNumber = (options & OutlineItemIncludeSceneNumber) != 0;
-		NSString *sceneNumber = (!line.omitted && includeSceneNumber) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
-		NSAttributedString *header = [NSAttributedString.alloc initWithString:sceneNumber attributes:@{
-			NSForegroundColorAttributeName: sceneNumberColor,
-			NSFontAttributeName: font
-		}];
-		
+        NSString *sceneNumber = (!line.omitted && includeSceneNumber) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
+        NSAttributedString *header = [NSAttributedString.alloc initWithString:sceneNumber attributes:@{
+            NSForegroundColorAttributeName: sceneNumberColor,
+            NSFontAttributeName: font
+        }];
+        
+        // Only include scene number if it's requested
+        bool includeWordCount = (options & OutlineItemIncludeWordCount) != 0;
+        NSString *wordCount = (!line.omitted && includeWordCount) ? [NSString stringWithFormat:@"                  [ %@ ]", line.wordCount] : @"";
+        NSAttributedString *footer = [NSAttributedString.alloc initWithString:wordCount attributes:@{
+            NSForegroundColorAttributeName: theme.outlineSynopsis,
+            NSFontAttributeName: font
+        }];
+        
 		BXColor *sceneColor = (itemColor != nil) ? itemColor : outlineItemColor;
 		NSAttributedString *body = [NSAttributedString.alloc initWithString:string attributes:@{
 			NSForegroundColorAttributeName: (!line.omitted) ? sceneColor : omittedItemColor,
 			NSFontAttributeName: font
 		}];
+    
 			
 		[resultString appendAttributedString:header];
-		[resultString appendAttributedString:body];
+        [resultString appendAttributedString:body];
+        [resultString appendAttributedString:footer];
+        
 	}
 
 	else if (line.type == section && string.length > 0) {
@@ -136,6 +148,15 @@
             NSForegroundColorAttributeName: color,
             NSFontAttributeName: font
         }];
+        
+        bool includeWordCount = (options & OutlineItemIncludeWordCount) != 0;
+        NSString *wordCount = (!line.omitted && includeWordCount) ? [NSString stringWithFormat:@"                  [ %@ ]", line.wordCount] : @"";
+        NSAttributedString *footer = [NSAttributedString.alloc initWithString:wordCount attributes:@{
+            NSForegroundColorAttributeName: theme.commentColor,
+            NSFontAttributeName: font
+        }];
+        
+        [resultString appendAttributedString:footer];
 	}
 	
 	// Append synopsis lines

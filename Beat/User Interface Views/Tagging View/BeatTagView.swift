@@ -297,7 +297,7 @@ class BeatTagEditorView:NSViewController, NSOutlineViewDelegate, NSOutlineViewDa
 		let view = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier("SceneCell"), owner: self) as? NSTableCellView
 		
 		if let scene = item as? OutlineScene, let delegate = self.delegate {
-			let outlineItem = OutlineViewItem.withScene(scene, currentScene: delegate.currentScene ?? OutlineScene(), sceneNumber: true, synopsis: true, notes: true, markers: true, isDark: delegate.isDark())
+			let outlineItem = OutlineViewItem.withScene(scene, currentScene: delegate.currentScene ?? OutlineScene(), sceneNumber: true, synopsis: true, notes: true, markers: true, isDark: delegate.isDark(), wordCount: false);
 			view?.textField?.attributedStringValue = outlineItem
 		}
 		

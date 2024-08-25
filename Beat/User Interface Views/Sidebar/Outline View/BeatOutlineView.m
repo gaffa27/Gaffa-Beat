@@ -331,6 +331,7 @@
 	if (self.showSynopsis) options |= OutlineItemIncludeSynopsis;
 	if (self.showNotes) options |= OutlineItemIncludeNotes;
 	if (self.showSceneNumbers) options |= OutlineItemIncludeSceneNumber;
+	if (self.showWordCounts) options |= OutlineItemIncludeWordCount;
 	if (self.showMarkers) options |= OutlineItemIncludeMarkers;
 	if (((id<BeatDarknessDelegate>)NSApp.delegate).isDark) options |= OutlineItemDarkMode;
 	
@@ -356,6 +357,10 @@
 - (bool)showMarkers
 {
 	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowMarkersInOutline];
+}
+-(bool)showWordCounts
+{
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowWordCountInOutline];
 }
 
 #pragma mark - Delegation
@@ -450,7 +455,7 @@
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		// Note: OutlineViewItem returns an NSMutableAttributedString
 		bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
-		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark];
+		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene sceneNumber:self.showSceneNumbers synopsis:self.showSynopsis notes:self.showNotes markers:self.showMarkers isDark:dark wordCount:self.showWordCounts];
 	}
 	return @"";
 	

@@ -255,6 +255,9 @@ JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)c
 - (NSString*)createDocumentFile;
 /// Returns the plain-text file content used to save current screenplay (including settings block etc.) with additional `BeatDocumentSettings` block
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
+/// Returns the file name without extension
+- (NSString*)displayName;
+
 
 #if !TARGET_OS_IOS
     /// Displays an open dialog

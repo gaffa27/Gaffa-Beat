@@ -1849,6 +1849,11 @@
 	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
 }
 
+-(NSString*)displayName
+{
+    return [_delegate displayName];
+}
+
 
 #pragma mark - Parser data delegation
 

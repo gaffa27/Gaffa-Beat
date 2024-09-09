@@ -1067,10 +1067,11 @@ static NSString* BeatFormattingKeyWhiteSpace = @"BeatWhiteSpace";
     }];
     
 /* gaffa
-    [self.invisiblesRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+    [self.whiteSpaceRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if ([self rangeInStringRange:range]) [self addStyleAttr:INVISIBLES_STYLE toString:string range:range];
     }];
-        */
+ */
+        
     
     [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         if (range.length > OMIT_PATTERN.length * 2) {
@@ -1684,7 +1685,8 @@ static NSString* BeatFormattingKeyWhiteSpace = @"BeatWhiteSpace";
     [self.whiteSpaceRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
         [indices addIndexesInRange:range];
     }];
-    */
+     */
+    
     
     if (includeOmissions) {
         [self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {

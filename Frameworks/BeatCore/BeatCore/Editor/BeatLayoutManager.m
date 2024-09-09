@@ -340,13 +340,11 @@
             for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
                 if (i < 0) break;
                 if (self.textStorage.string.length > i && [self.textStorage.string characterAtIndex:i] == '\n') {
-                    if (! self->_editorDelegate.showWhiteSpace) {
-                        rRange.length = rRange.length - 1;
-                    }
-                    else {
+                    rRange.length = rRange.length - 1;
+                    if (self->_editorDelegate.showWhiteSpace) {
                         [self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] range:NSMakeRange(i, 1)];
-                        // [self addTemporaryAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.9] forCharacterRange:NSMakeRange(i, 1)];
                     }
+
                     break;
                 }
             }
@@ -846,7 +844,7 @@
         
         NSInteger newLineSubs = CFStringFindAndReplace(modifiedWhiteSpace, CFSTR("\n"), CFSTR("¶"), CFRangeMake(0, CFStringGetLength(modifiedWhiteSpace)), 0);
 
-        if ((newLineSubs) > 0) {
+        if ((newLineSubs) > 0 || spaceSubs > 0) {
             
             for (NSInteger i = 0; i < glyphRange.length; i++) {
                 unichar ch = [self.textStorage.string characterAtIndex:charIndexes[i]];
@@ -854,15 +852,11 @@
                 
                 NSGlyphProperty prop = props[i];
                 
-                if (ch == '\n' ) { //|| ch == ' ') {
+                if (ch == '\n' ) {
                     
                     prop &= ~(NSGlyphPropertyControlCharacter);
-
-                    //[self.editorDelegate addAttribute:NSForegroundColorAttributeName value:[ThemeManager.sharedManager.invisibleTextColor colorWithAlphaComponent:0.5] range:NSMakeRange(charIndexes[i], 1)];
-                    
-                    modifiedProps[i] = prop;
-
                 }
+                modifiedProps[i] = prop;
             }
         }
 

@@ -1183,7 +1183,7 @@ DQ
                             <menuItem title="Show  WhiteSpace" keyEquivalent="w" id="a3F-ZL-N9F" customClass="BeatOnOffMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showInvisibles"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="settingKey" value="showWhiteSpace"/>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="documentSetting" value="NO"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>

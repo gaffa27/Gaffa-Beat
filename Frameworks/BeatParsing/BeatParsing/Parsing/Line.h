@@ -221,9 +221,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSUInteger sectionDepth;
 /// If the line is an outline element, this value contains the scene number, but only after the outline structure has been updated
 @property (nonatomic) NSString* sceneNumber;
-/// If the line is an outline element, this value contains the word count, but only after the outline structure has been updated
-@property (nonatomic) NSString* wordCount;
-
 /// Color for outline element (`nil` or empty if no color is set)
 @property (nonatomic) NSString* color;
 /// This line was forced to be a character cue in editor

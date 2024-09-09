@@ -69,7 +69,6 @@ NSString* const BeatSettingAutomaticContd 				= @"automaticContd";
 NSString* const BeatSettingShowHeadingsInOutline        = @"showHeadingsInOutline";
 NSString* const BeatSettingShowSynopsisInOutline		= @"showSynopsisInOutline";
 NSString* const BeatSettingShowSceneNumbersInOutline    = @"showSceneNumbersInOutline";
-NSString* const BeatSettingShowWordCountInOutline       = @"showWordCountInOutline";
 NSString* const BeatSettingShowNotesInOutline           = @"showNotesInOutline";
 NSString* const BeatSettingShowMarkersInOutline         = @"showMarkersInOutline";
 NSString* const BeatSettingShowSnapshotsInOutline       = @"showSnapshotsInOutline";
@@ -145,7 +144,6 @@ NSString* const BeatSettingDarkMode                     = @"Dark Mode";
         BeatSettingShowHeadingsInOutline: @[BeatSettingShowHeadingsInOutline, @YES],
         BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
         BeatSettingShowSceneNumbersInOutline: @[BeatSettingShowSceneNumbersInOutline, @YES],
-        BeatSettingShowWordCountInOutline: @[BeatSettingShowWordCountInOutline, @YES],
         BeatSettingShowNotesInOutline: @[BeatSettingShowNotesInOutline, @YES],
         BeatSettingShowMarkersInOutline: @[BeatSettingShowMarkersInOutline, @YES],
         BeatSettingShowSnapshotsInOutline: @[BeatSettingShowSnapshotsInOutline, @YES],

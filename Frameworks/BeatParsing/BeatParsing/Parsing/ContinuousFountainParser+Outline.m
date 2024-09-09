@@ -109,87 +109,9 @@
 /// Call this after text was changed. This in turn calls `outlineDidChange` in your document controller when needed.
 - (void)checkForChangesInOutline
 {
-//    if ([BeatUserDefaults.sharedDefaults getBool:BeatSettingShowWordCountInOutline]) {
-    [self updateOutlineWordCounts];
     [self getAndResetChangesInOutline];
 }
 
-///  re/calculater scene word counts
-- (void)updateOutlineWordCounts
-{    
-    NSSpellChecker *chk = NSSpellChecker.sharedSpellChecker;
-    
-    Line *prevLevel_1 = nil;
-    Line *prevLevel_2 = nil;
-    NSInteger level1WordCount = 0;
-    NSInteger level2WordCount = 0;
-    NSInteger sceneWordCount = 0;
-    
-    
-    for (OutlineScene *scene in self.outline) {
-
-         NSArray *lines = [self linesForScene:scene];
-
-        for (Line *line in lines) {
-            if (line.type == section) {
-                if (line.sectionDepth == 2) {
-                    if (!prevLevel_2) {
-                        prevLevel_2 = line;
-                        level2WordCount = 0;
-                    }
-                    else {
-                        
-                        prevLevel_2.wordCount = [NSString stringWithFormat:@"%lu", level2WordCount];
-                        level2WordCount = 0;
-                        prevLevel_2 = line;
-                    }
-                }
-                else if (line.sectionDepth == 1) {
-                    if (!prevLevel_1) {
-                        prevLevel_1 = line;
-                        level1WordCount = 0;
-                    }
-                    else {
-                        prevLevel_1.wordCount = [NSString stringWithFormat:@"%lu", level1WordCount];
-                        level1WordCount = 0;
-                        prevLevel_1 = line;
-                        level2WordCount = 0;
-                        prevLevel_2 = nil;
-                    }
-                }
-            }
-            if (line.type == heading) {
-                // new scene
-                if (prevLevel_1) level1WordCount += sceneWordCount;
-                if (prevLevel_2) level2WordCount += sceneWordCount;
-                sceneWordCount = 0;
-            }
-            if (line.type == action  || line.type == lyrics) {
-                NSInteger words = [chk countWordsInString:line.string language:nil];
-                if (words != -1) {
-                    //NSLog(@"line: %ld words : %@",  words, line);
-                    sceneWordCount += words;
-                }
-            }
-        }
-        NSString *count = [NSString stringWithFormat:@"%lu", sceneWordCount];
-        if (!scene.line.wordCount || [scene.line.wordCount isNotEqualTo:count]) {
-            //scene.wordCount = count;
-            scene.line.wordCount = count;
-            [self.outlineChanges.updated addObject:scene];
-        }
-        
-        if (prevLevel_2) {
-            prevLevel_2.wordCount = [NSString stringWithFormat:@"%lu", level2WordCount];
-        }
-        if (prevLevel_1) {
-            prevLevel_1.wordCount = [NSString stringWithFormat:@"%lu", level1WordCount];
-
-        }
-
-    }
-}
-//
 /// Gets and resets the changes to outline. Document controller base class provides a method called `outlineDidChange` to handle these.
 - (OutlineChanges*)getAndResetChangesInOutline
 {
@@ -197,7 +119,6 @@
     for (OutlineScene* scene in self.outlineChanges.updated) {
         [self updateScene:scene at:NSNotFound lineIndex:NSNotFound];
     }
-    
     for (OutlineScene* scene in self.outlineChanges.added) {
         [self updateScene:scene at:NSNotFound lineIndex:NSNotFound];
     }

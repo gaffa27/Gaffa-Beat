@@ -16,7 +16,6 @@
 
 @protocol OutlineSceneExports <JSExport>
 @property (nonatomic, readonly) NSString * sceneNumber;
-@property (nonatomic, readonly) NSString * wordCount;
 @property (nonatomic, readonly) NSString * color;
 
 @property (nonatomic, readonly) Line * line;
@@ -93,8 +92,6 @@
 @property (nonatomic) LineType type;
 /// Scene number (forwarded from the heading line)
 @property (nonatomic) NSString * sceneNumber;
-/// the word count for this scene.  Most useful in manuscriipt and novel styles
-///@property (nonatomic) NSString *wordCount;
 /// Outline element color (forwarded from the heading line)
 @property (nonatomic, readonly) NSString * color;
 
